@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker 2026</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>📊 Budget Tracker 2026</h1>
+                    <p>Comprehensive Financial Management System</p>
+                </div>
+                <button class="settings-btn" onclick="openSettings()" title="Settings">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m-9-9h6m6 0h6m-2.636 6.364l-4.243-4.243m0 0L4.636 4.636m12.728 0L12.121 9.88"></path>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card highlight">
+                <h3>Total Current Assets</h3>
+                <div class="value" id="totalCurrentAssets">$0.00</div>
+            </div>
+            <div class="metric-card highlight">
+                <h3>Current Assets End of Year</h3>
+                <div class="value" id="currentAssetsEOY">$0.00</div>
+            </div>
+            <div class="metric-card">
+                <h3>Total Current Net Worth</h3>
+                <div class="value" id="totalNetWorth">$0.00</div>
+            </div>
+            <div class="metric-card">
+                <h3>Outstanding Entries</h3>
+                <div class="value" id="outstandingTotal">$0.00</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="section">
+                <h2>📝 New Journal Entry</h2>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="entryDate" />
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="entryDescription" placeholder="e.g., Golf expenses" />
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="entryAmount" step="0.01" placeholder="0.00" />
+                </div>
+                <div class="form-group">
+                    <label>Debit Account (Increase/Expense)</label>
+                    <select id="debitAccount">
+                        <optgroup label="Expenses - Monthly" id="monthlyExpensesDebitGroup">
+                        </optgroup>
+                        <optgroup label="Expenses - Seasonal" id="seasonalExpensesDebitGroup">
+                        </optgroup>
+                        <optgroup label="Other Expense">
+                            <option value="other">Other Expense</option>
+                        </optgroup>
+                        <optgroup label="Assets">
+                            <option value="regions">Regions/Debit</option>
+                            <option value="stocks">Stocks</option>
+                            <option value="venmo">Venmo</option>
+                            <option value="cash">Cash</option>
+                            <option value="outstandingCredit">Outstanding Credit</option>
+                            <option value="outstandingEntries">Outstanding Entries</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" id="outstandingEntrySelectGroup" style="display: none;">
+                    <label>Select Outstanding Entry</label>
+                    <select id="outstandingEntrySelect">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Credit Account (Decrease/Payment)</label>
+                    <select id="creditAccount">
+                        <optgroup label="Assets">
+                            <option value="regions">Regions/Debit</option>
+                            <option value="stocks">Stocks</option>
+                            <option value="venmo">Venmo</option>
+                            <option value="cash">Cash</option>
+                            <option value="outstandingCredit">Outstanding Credit</option>
+                            <option value="outstandingEntries">Outstanding Entries</option>
+                        </optgroup>
+                        <optgroup label="Income">
+                            <option value="income">Income Remaining</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group" id="outstandingEntryCreditSelectGroup" style="display: none;">
+                    <label>Select Outstanding Entry</label>
+                    <select id="outstandingEntryCreditSelect">
+                    </select>
+                </div>
+                <button onclick="addJournalEntry()">Add Entry</button>
+            </div>
+
+            <div class="section">
+                <h2>💰 Current Assets</h2>
+                <div class="accounts-grid">
+                    <div class="account-item">
+                        <span class="account-name">Regions/Debit</span>
+                        <span class="account-balance" id="regionsBalance">$10,000.00</span>
+                    </div>
+                    <div class="account-item">
+                        <span class="account-name">Stocks</span>
+                        <span class="account-balance" id="stocksBalance">$3,000.00</span>
+                    </div>
+                    <div class="account-item">
+                        <span class="account-name">Venmo</span>
+                        <span class="account-balance" id="venmoBalance">$100.00</span>
+                    </div>
+                    <div class="account-item">
+                        <span class="account-name">Cash</span>
+                        <span class="account-balance" id="cashBalance">$1,000.00</span>
+                    </div>
+                    <div class="account-item">
+                        <span class="account-name">Outstanding Credit</span>
+                        <span class="account-balance negative" id="outstandingCreditBalance">-$4,100.00</span>
+                    </div>
+                </div>
+                
+                <h2 style="margin-top: 30px;">📊 Other Accounts</h2>
+                <div class="accounts-grid">
+                    <div class="account-item">
+                        <span class="account-name">Roth IRA</span>
+                        <span class="account-balance" id="rothBalance">$3,000.00</span>
+                    </div>
+                    <div class="account-item">
+                        <span class="account-name">Income Remaining</span>
+                        <span class="account-balance" id="incomeBalance">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⏳ Outstanding Entries</h2>
+                <button onclick="showAddOutstandingEntry()" style="margin-bottom: 15px; font-size: 0.9em;">+ Add Outstanding Entry</button>
+                <div class="entry-list" id="outstandingEntriesList"></div>
+            </div>
+
+            <div class="section">
+                <h2>📖 Journal Entries Log</h2>
+                <div class="entry-list" id="journalEntriesList"></div>
+            </div>
+
+            <div class="section full-width">
+                <h2>📅 Monthly Expenses (Remaining)</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showAddMonthlyExpense()" style="font-size: 0.9em;">+ Add Monthly Expense</button>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85em;">
+                        <thead>
+                            <tr style="background: #667eea; color: white;">
+                                <th style="padding: 10px; text-align: left; position: sticky; left: 0; background: #667eea;">Expense</th>
+                                <th style="padding: 10px; text-align: center;">Jan</th>
+                                <th style="padding: 10px; text-align: center;">Feb</th>
+                                <th style="padding: 10px; text-align: center;">Mar</th>
+                                <th style="padding: 10px; text-align: center;">Apr</th>
+                                <th style="padding: 10px; text-align: center;">May</th>
+                                <th style="padding: 10px; text-align: center;">Jun</th>
+                                <th style="padding: 10px; text-align: center;">Jul</th>
+                                <th style="padding: 10px; text-align: center;">Aug</th>
+                                <th style="padding: 10px; text-align: center;">Sep</th>
+                                <th style="padding: 10px; text-align: center;">Oct</th>
+                                <th style="padding: 10px; text-align: center;">Nov</th>
+                                <th style="padding: 10px; text-align: center;">Dec</th>
+                                <th style="padding: 10px; text-align: center;">Monthly</th>
+                                <th style="padding: 10px; text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyExpensesTable">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                    <strong>Total Fixed Expenses Remaining: </strong>
+                    <span id="totalMonthlyExpenses" style="color: #667eea; font-size: 1.2em; font-weight: bold;">$0.00</span>
+                </div>
+            </div>
+
+            <div class="section full-width">
+                <h2>🍂 Seasonal Expenses (Remaining)</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 10px;">❄️ Winter</h3>
+                        <div id="winterExpensesList"></div>
+                        <button onclick="showAddSeasonalExpense('Winter')" style="margin-top: 10px; width: 100%; font-size: 0.9em;">+ Add Winter Expense</button>
+                    </div>
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 10px;">🌸 Spring</h3>
+                        <div id="springExpensesList"></div>
+                        <button onclick="showAddSeasonalExpense('Spring')" style="margin-top: 10px; width: 100%; font-size: 0.9em;">+ Add Spring Expense</button>
+                    </div>
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 10px;">☀️ Summer</h3>
+                        <div id="summerExpensesList"></div>
+                        <button onclick="showAddSeasonalExpense('Summer')" style="margin-top: 10px; width: 100%; font-size: 0.9em;">+ Add Summer Expense</button>
+                    </div>
+                    <div>
+                        <h3 style="color: #667eea; margin-bottom: 10px;">🍁 Fall</h3>
+                        <div id="fallExpensesList"></div>
+                        <button onclick="showAddSeasonalExpense('Fall')" style="margin-top: 10px; width: 100%; font-size: 0.9em;">+ Add Fall Expense</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e0e0e0;">
+                    <strong>Discretionary Spending Remaining: </strong>
+                    <span id="totalSeasonalExpenses" style="color: #667eea; font-size: 1.2em; font-weight: bold;">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addMonthlyExpenseModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Monthly Expense</h3>
+            <div class="form-group">
+                <label>Expense Name</label>
+                <input type="text" id="newMonthlyExpenseName" placeholder="e.g., Car Insurance" />
+            </div>
+            <div class="form-group">
+                <label>Monthly Amount</label>
+                <input type="number" id="newMonthlyExpenseAmount" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModal('addMonthlyExpenseModal')">Cancel</button>
+                <button onclick="addMonthlyExpense()">Add Expense</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addSeasonalExpenseModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Seasonal Expense - <span id="seasonalExpenseSeason"></span></h3>
+            <div class="form-group">
+                <label>Expense Name</label>
+                <input type="text" id="newSeasonalExpenseName" placeholder="e.g., Pool Maintenance" />
+            </div>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="newSeasonalExpenseAmount" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModal('addSeasonalExpenseModal')">Cancel</button>
+                <button onclick="addSeasonalExpense()">Add Expense</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addOutstandingEntryModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Outstanding Entry</h3>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="newOutstandingDate" />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="newOutstandingDescription" placeholder="e.g., Birthday gift from Grandma" />
+            </div>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="newOutstandingAmount" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModal('addOutstandingEntryModal')">Cancel</button>
+                <button onclick="addOutstandingEntryDirect()">Add Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editOutstandingEntryModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Outstanding Entry</h3>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="editOutstandingDate" />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="editOutstandingDescription" />
+            </div>
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" id="editOutstandingAmount" step="0.01" />
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeModal('editOutstandingEntryModal')">Cancel</button>
+                <button onclick="saveOutstandingEntryEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content large">
+            <h3>⚙️ Settings</h3>
+            
+            <h4 style="color: #667eea; margin-top: 20px; margin-bottom: 15px;">Current Assets</h4>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>Regions/Debit</label>
+                    <input type="number" id="settingsRegions" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Stocks</label>
+                    <input type="number" id="settingsStocks" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Venmo</label>
+                    <input type="number" id="settingsVenmo" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Cash</label>
+                    <input type="number" id="settingsCash" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Outstanding Credit</label>
+                    <input type="number" id="settingsOutstandingCredit" step="0.01" />
+                </div>
+            </div>
+
+            <h4 style="color: #667eea; margin-top: 20px; margin-bottom: 15px;">Other Accounts</h4>
+            <div class="settings-grid">
+                <div class="form-group">
+                    <label>Roth IRA</label>
+                    <input type="number" id="settingsRothIRA" step="0.01" />
+                </div>
+                <div class="form-group">
+                    <label>Income Remaining</label>
+                    <input type="number" id="settingsIncomeRemaining" step="0.01" />
+                </div>
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 30px;">
+                <button onclick="closeModal('settingsModal')">Cancel</button>
+                <button onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
