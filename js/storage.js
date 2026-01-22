@@ -1,38 +1,28 @@
-// Storage module for persisting budget data
+// Storage module for persisting budget data to Firebase
+import { saveUserBudget, getCurrentUser } from './auth.js';
+
 const Storage = {
-    STORAGE_KEY: 'budgetTrackerData',
-
-    // Save budget data to localStorage
-    save(budget) {
+    // Save budget data to Firebase
+    async save(budget) {
         try {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(budget));
-            return true;
+            const user = getCurrentUser();
+            if (!user) {
+                console.error('No user logged in');
+                return false;
+            }
+            
+            const result = await saveUserBudget(user.uid, budget);
+            return result.success;
         } catch (e) {
-            console.error('Error saving to localStorage:', e);
+            console.error('Error saving to Firebase:', e);
             return false;
         }
     },
 
-    // Load budget data from localStorage
+    // Load is handled by auth.js loadUserBudget
     load() {
-        try {
-            const data = localStorage.getItem(this.STORAGE_KEY);
-            return data ? JSON.parse(data) : null;
-        } catch (e) {
-            console.error('Error loading from localStorage:', e);
-            return null;
-        }
-    },
-
-    // Clear all data
-    clear() {
-        try {
-            localStorage.removeItem(this.STORAGE_KEY);
-            return true;
-        } catch (e) {
-            console.error('Error clearing localStorage:', e);
-            return false;
-        }
+        // This is now handled in app.js through Firebase auth
+        return null;
     },
 
     // Export data as JSON file
@@ -61,3 +51,8 @@ const Storage = {
         reader.readAsText(file);
     }
 };
+
+export default Storage;
+
+export default Storage;
+

@@ -1,92 +1,53 @@
-// Import Firebase modules
-import { initAuth, loadUserBudget, logOut, getCurrentUser } from './auth.js';
-import Storage from './storage.js';
-
 // Initialize budget data
 let budget = {
     currentAssets: {
-        regions: 0,
-        stocks: 0,
-        venmo: 0,
-        cash: 0,
-        outstandingCredit: 0
+        regions: 10000,
+        stocks: 3000,
+        venmo: 100,
+        cash: 1000,
+        outstandingCredit: -4100
     },
     otherAccounts: {
-        rothIRA: 0,
-        incomeRemaining: 0
+        rothIRA: 3000,
+        incomeRemaining: 10000
     },
-    outstandingEntries: [],
+    outstandingEntries: [
+        {
+            id: 1,
+            date: '2026-01-01',
+            description: 'Friend money',
+            amount: 100,
+            type: 'outstanding'
+        }
+    ],
     journalEntries: [],
-    monthlyExpenses: [],
-    seasonalExpenses: [],
-    nextExpenseId: 1,
-    nextOutstandingId: 1
+    monthlyExpenses: [
+        { id: 1, name: 'Rent', amount: 500, paidMonths: [] },
+        { id: 2, name: 'Internet', amount: 100, paidMonths: [] },
+        { id: 3, name: 'Utilities', amount: 100, paidMonths: [] }
+    ],
+    seasonalExpenses: [
+        { id: 1, name: 'Ice Melt', amount: 500, season: 'Winter', paid: false },
+        { id: 2, name: 'Golf', amount: 200, season: 'Spring', paid: false },
+        { id: 3, name: 'Baseball', amount: 500, season: 'Summer', paid: false },
+        { id: 4, name: 'Leaf Removal', amount: 500, season: 'Fall', paid: false }
+    ],
+    nextExpenseId: 5,
+    nextOutstandingId: 2
 };
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let currentSeasonForModal = '';
 let editingOutstandingEntryId = null;
-let currentUser = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Firebase auth
-    initAuth(
-        // On user logged in
-        async (user) => {
-            currentUser = user;
-            console.log('User logged in:', user.email);
-            
-            // Load user's budget data
-            const result = await loadUserBudget(user.uid);
-            if (result.success && result.data) {
-                budget = result.data;
-            }
-            
-            // Show user email in header
-            displayUserInfo(user);
-            
-            // Initialize the app
-            initializeApp();
-        },
-        // On user logged out
-        () => {
-            // Redirect to login page
-            window.location.href = 'login.html';
-        }
-    );
-});
-
-function displayUserInfo(user) {
-    const header = document.querySelector('.header');
-    const userInfo = document.createElement('div');
-    userInfo.style.cssText = 'display: flex; align-items: center; gap: 15px;';
-    userInfo.innerHTML = `
-        <div style="text-align: right;">
-            <div style="font-size: 0.85em; color: #7f8c8d;">Logged in as</div>
-            <div style="font-weight: 600; color: #2c3e50;">${user.email}</div>
-        </div>
-        <button onclick="handleLogout()" style="padding: 8px 16px; font-size: 0.9em; background: #e74c3c;">
-            Logout
-        </button>
-    `;
+    // Try to load saved data
+    const savedData = Storage.load();
+    if (savedData) {
+        budget = savedData;
+    }
     
-    // Find the header flex container and add user info
-    const headerFlex = header.querySelector('div');
-    if (headerFlex) {
-        headerFlex.appendChild(userInfo);
-    }
-}
-
-window.handleLogout = async function() {
-    if (confirm('Are you sure you want to logout?')) {
-        await logOut();
-        window.location.href = 'login.html';
-    }
-};
-
-function initializeApp() {
-function initializeApp() {
     // Initialize date inputs
     document.getElementById('entryDate').valueAsDate = new Date();
     document.getElementById('newOutstandingDate').valueAsDate = new Date();
@@ -113,13 +74,11 @@ function initializeApp() {
     });
     
     updateDisplay();
-}
+});
 
 // Save data whenever it changes
-async function saveData() {
-    if (currentUser) {
-        await Storage.save(budget);
-    }
+function saveData() {
+    Storage.save(budget);
 }
 
 function formatCurrency(amount) {
