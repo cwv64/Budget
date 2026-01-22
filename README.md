@@ -16,7 +16,7 @@ A comprehensive, double-entry accounting-style budget tracking application built
 ### Account Management
 - **Current Assets**: Regions/Debit, Stocks, Venmo, Cash, Outstanding Credit
 - **Other Accounts**: Roth IRA, Income Remaining
-- **Settings Panel**: Easily adjust account balances via the settings gear icon
+- **Settings Panel**:  Easily adjust account balances via the settings gear icon
 
 ### Expense Tracking
 - **Monthly Expenses**: Track recurring monthly bills with a visual 12-month calendar
