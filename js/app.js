@@ -86,7 +86,6 @@ window.handleLogout = async function() {
 };
 
 function initializeApp() {
-function initializeApp() {
     // Initialize date inputs
     document.getElementById('entryDate').valueAsDate = new Date();
     document.getElementById('newOutstandingDate').valueAsDate = new Date();
