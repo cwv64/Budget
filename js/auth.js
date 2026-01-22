@@ -2,11 +2,15 @@
 import { auth, db } from './firebase-config.js';
 import { 
     createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
     signOut,
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const googleProvider = new GoogleAuthProvider();
 
 // Auth state observer
 export function initAuth(onUserLoggedIn, onUserLoggedOut) {
@@ -73,6 +77,51 @@ export async function signIn(email, password) {
             message = 'Incorrect password';
         }
         return { success: false, error: message };
+    }
+}
+
+// Sign in with Google
+export async function signInWithGoogle() {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        
+        // Check if user document exists, if not create it
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists()) {
+            // Create initial budget data for new user
+            const initialBudget = {
+                currentAssets: {
+                    regions: 0,
+                    stocks: 0,
+                    venmo: 0,
+                    cash: 0,
+                    outstandingCredit: 0
+                },
+                otherAccounts: {
+                    rothIRA: 0,
+                    incomeRemaining: 0
+                },
+                outstandingEntries: [],
+                journalEntries: [],
+                monthlyExpenses: [],
+                seasonalExpenses: [],
+                nextExpenseId: 1,
+                nextOutstandingId: 1
+            };
+            
+            await setDoc(docRef, {
+                email: user.email,
+                budget: initialBudget,
+                createdAt: new Date().toISOString()
+            });
+        }
+        
+        return { success: true, user };
+    } catch (error) {
+        return { success: false, error: error.message };
     }
 }
 

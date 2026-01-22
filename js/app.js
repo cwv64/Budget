@@ -617,7 +617,7 @@ function deleteSeasonalExpense(id) {
 }
 
 // Settings functionality
-function openSettings() {
+window.openSettings = function() {
     // Populate settings form with current values
     document.getElementById('settingsRegions').value = budget.currentAssets.regions;
     document.getElementById('settingsStocks').value = budget.currentAssets.stocks;
@@ -630,7 +630,7 @@ function openSettings() {
     document.getElementById('settingsModal').classList.add('active');
 }
 
-function saveSettings() {
+window.saveSettings = function() {
     // Update budget with new values
     budget.currentAssets.regions = parseFloat(document.getElementById('settingsRegions').value) || 0;
     budget.currentAssets.stocks = parseFloat(document.getElementById('settingsStocks').value) || 0;
@@ -643,3 +643,19 @@ function saveSettings() {
     closeModal('settingsModal');
     updateDisplay();
 }
+
+// Make all onClick functions available globally
+window.addJournalEntry = addJournalEntry;
+window.deleteOutstandingEntry = deleteOutstandingEntry;
+window.showAddOutstandingEntry = showAddOutstandingEntry;
+window.addOutstandingEntryDirect = addOutstandingEntryDirect;
+window.editOutstandingEntry = editOutstandingEntry;
+window.saveOutstandingEntryEdit = saveOutstandingEntryEdit;
+window.deleteJournalEntry = deleteJournalEntry;
+window.showAddMonthlyExpense = showAddMonthlyExpense;
+window.showAddSeasonalExpense = showAddSeasonalExpense;
+window.closeModal = closeModal;
+window.addMonthlyExpense = addMonthlyExpense;
+window.addSeasonalExpense = addSeasonalExpense;
+window.deleteMonthlyExpense = deleteMonthlyExpense;
+window.deleteSeasonalExpense = deleteSeasonalExpense;
